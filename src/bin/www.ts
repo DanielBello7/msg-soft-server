@@ -1,13 +1,16 @@
 import environment_configurations from "../config/environments.config";
-import SocketConnection from "../middlewares/connection";
+import SocketConnection from "../modules/connection";
 import ServerApplication from "../app";
 import http from 'http';
 import log from "../config/logger.config";
 import variables from '../constants/variables';
+import { ParticipantsDataType } from '../global';
 
 const whitelist = ["http://localhost:5173"]
+let users: ParticipantsDataType[] = []
+
 environment_configurations();
-const app = ServerApplication(whitelist);
+const app = ServerApplication(whitelist, users);
 const server = http.createServer(app);
 const port = variables.PORT;
 
@@ -39,7 +42,7 @@ function onError(error: any) {
     }
 }
 
-SocketConnection(server, whitelist);
+SocketConnection(server, whitelist, users);
 
 server.on('error', onError);
 server.on('listening', onListening);

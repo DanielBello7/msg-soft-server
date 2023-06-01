@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production node ./build/bin/app.js | bunyan -o short",
-    "dev": "NODE_ENV=development ts-node-dev --respawn ./src/app.ts | bunyan -o short",
-    "build-dev": "NODE_ENV=development nodemon ./build/bin/app.js | bunyan -o short",
+    "start": "NODE_ENV=production node ./build/bin/www..js | bunyan -o short",
+    "dev": "NODE_ENV=development ts-node-dev --respawn ./src/bin/www.ts | bunyan -o short",
+    "build-dev": "NODE_ENV=development nodemon ./build/bin/www.js | bunyan -o short",
     "build": "tsc"
   },
   "keywords": [],

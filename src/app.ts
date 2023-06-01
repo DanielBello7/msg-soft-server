@@ -7,10 +7,8 @@ import path from 'path';
 import express from 'express';
 import cors from 'cors';
 
-const ServerApplication = (whitelist: string[]) => {
+const ServerApplication = (whitelist: string[], users: ParticipantsDataType[]) => {
     const app = express();
-
-    const users: ParticipantsDataType[] = []
 
     app.use(cors({ credentials: true, origin: whitelist }));
     app.use(express.json({ limit: variables.DATA_LIMIT }));
