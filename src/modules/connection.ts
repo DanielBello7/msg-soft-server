@@ -1,14 +1,16 @@
-import log from '../config/logger.config';
-import http from 'http';
+import { UsersJSONService } from '../services/JSONDatabase.service';
 import { Server } from 'socket.io';
-import { ParticipantsDataType } from '../global';
+import http from 'http';
 
 async function SocketConnection(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
-    whitelist: string[],
-    users: ParticipantsDataType[]
+    whitelist: string[]
 ) {
-    const io = new Server(server, { cors: { origin: whitelist } });
+    const io = new Server(server, {
+        cors: {
+            origin: whitelist
+        }
+    });
 
     io.use((socket: any, next) => {
         const id = socket.handshake.auth._id
@@ -18,15 +20,27 @@ async function SocketConnection(
         next();
     })
 
-    io.on('connection', (client) => {
+    io.on('connection', async (client) => {
         const socket: any = client
-        users = [...users, { _id: socket.id, fullname: socket.fullname }];
+        const roomSockets = await io.in(socket._id).fetchSockets();
+        const all = roomSockets.map((item) => item.id);
+        if (!all.includes(socket._id)) client.join(socket._id);
 
-        log.info(`client just connected with id ${socket.id} and name ${socket.fullname}`);
+        const socketUser = {
+            _id: socket.id,
+            fullname: socket.fullname
+        }
 
-        client.on('disconnect', () => {
-            const data = users.filter((item) => item._id !== socket.id);
-            return users = [...data];
+        const result = await UsersJSONService.FindDocument({ _id: socketUser._id })
+        if (!result) await UsersJSONService.AddDocument(socketUser);
+
+        client.on('outgoing', (data, room) => {
+            room.id.forEach((id: string) => client.to(id).emit('incoming', data))
+        });
+
+        client.on('disconnect', async () => {
+            const result = await UsersJSONService.FindDocument({ _id: socketUser._id })
+            if (result) await UsersJSONService.DeleteDocument(socketUser);
         });
     });
 

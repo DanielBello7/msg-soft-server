@@ -1,0 +1,17 @@
+[
+   {
+      "_id": "daniel@gmail.com",
+      "fullname": "Daniel",
+      "createdAt": "Wed Jun 07 2023"
+   },
+   {
+      "_id": "john@gmail.com",
+      "fullname": "John",
+      "createdAt": "Wed Jun 07 2023"
+   },
+   {
+      "_id": "tony@gmail.com",
+      "fullname": "Tony",
+      "createdAt": "Wed Jun 07 2023"
+   }
+]

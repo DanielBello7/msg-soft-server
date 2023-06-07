@@ -1,35 +1,32 @@
 import environment_configurations from "../config/environments.config";
 import SocketConnection from "../modules/connection";
+import ip from 'ip';
 import ServerApplication from "../app";
 import http from 'http';
 import log from "../config/logger.config";
 import variables from '../constants/variables';
-import { ParticipantsDataType } from '../global';
 
-const whitelist = ["http://localhost:5173"]
-let users: ParticipantsDataType[] = []
+const whitelist = [
+    "http://192.168.200.32:5173",
+    "http://localhost:5173",
+]
 
 environment_configurations();
-const app = ServerApplication(whitelist, users);
+const app = ServerApplication(whitelist);
 const server = http.createServer(app);
 const port = variables.PORT;
+const addr = ip.address();
 
 app.set('port', port);
+app.set('address', addr);
 
 function onListening() {
-    const address = server.address();
-    const bind = typeof address === 'string'
-        ? 'pipe ' + address
-        : 'port ' + address?.port;
-    log.info('server active on http://localhost:' + bind);
+    log.info(`server active on http://${addr}:${port}`);
 }
 
 function onError(error: any) {
     if (error.syscall !== 'listen') throw error;
-
-    const bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
+    const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
     switch (error.code) {
         case 'EACCES':
@@ -42,7 +39,7 @@ function onError(error: any) {
     }
 }
 
-SocketConnection(server, whitelist, users);
+SocketConnection(server, whitelist);
 
 server.on('error', onError);
 server.on('listening', onListening);
