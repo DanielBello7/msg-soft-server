@@ -1,5 +1,4 @@
 import environment_configurations from '../config/environments.config';
-
 environment_configurations();
 
 const PORT = process.env.PORT as string

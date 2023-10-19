@@ -1,3 +1,4 @@
+import "module-alias";
 import environment_configurations from "../config/environments.config";
 import SocketConnection from "../modules/connection";
 import ip from 'ip';
@@ -6,14 +7,12 @@ import http from 'http';
 import log from "../config/logger.config";
 import variables from '../constants/variables';
 
+environment_configurations();
+
 const whitelist = [
-    "http://192.168.200.34:5173",
-    "http://192.168.200.32:5173",
-    "http://192.168.200.112:5173",
     "http://localhost:5173",
 ]
 
-environment_configurations();
 const app = ServerApplication(whitelist);
 const server = http.createServer(app);
 const port = variables.PORT;
