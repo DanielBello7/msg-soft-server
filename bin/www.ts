@@ -1,11 +1,11 @@
-import "module-alias";
-import { variables } from '@/constants'
+import "module-alias/register";
+import { variables } from '@/constants';
 import environment_configurations from "@/config/environments.config";
-import SocketConnection from "@/modules/socket-connection";
-import ip from 'ip';
-import ServerApplication from "@/app";
-import http from 'http';
+import socketConnection from "@/modules/socket-connection";
 import log from "@/config/logger.config";
+import app from "@/app";
+import ip from 'ip';
+import http from 'http';
 
 environment_configurations();
 
@@ -13,13 +13,13 @@ const whitelist = [
     "http://localhost:5173",
 ]
 
-const app = ServerApplication(whitelist);
-const server = http.createServer(app);
+const serverApp = app(whitelist);
+const server = http.createServer(serverApp);
 const port = variables.PORT;
 const addr = ip.address();
 
-app.set('port', port);
-app.set('address', addr);
+serverApp.set('port', port);
+serverApp.set('address', addr);
 
 function onListening() {
     log.info(`server active on http://${addr}:${port}`);
@@ -40,8 +40,8 @@ function onError(error: any) {
     }
 }
 
-SocketConnection(server, whitelist);
-
 server.on('error', onError);
 server.on('listening', onListening);
-server.listen(port);
+server.listen(port, () => {
+    socketConnection(server, whitelist);
+});

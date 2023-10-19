@@ -1,6 +1,7 @@
-import { UsersJSONService } from '../services/JSONDatabase.service';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { Server, Socket } from 'socket.io';
+import { ParticipantsDataType } from '@/global';
+import UserModel from '@/services/users-json-service';
 import http from 'http';
 
 interface ExtendedSocket extends Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> {
@@ -8,7 +9,7 @@ interface ExtendedSocket extends Socket<DefaultEventsMap, DefaultEventsMap, Defa
     fullname?: string
 }
 
-async function SocketConnection(
+export default async function socketConnection(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
     whitelist: string[]
 ) {
@@ -29,25 +30,34 @@ async function SocketConnection(
     io.on('connection', async (client) => {
         const socket: ExtendedSocket = client
         if (!socket._id) return
-        const roomSockets = await io.in(socket._id).fetchSockets();
+        const roomSockets = await io.in(socket.id).fetchSockets();
         const all = roomSockets.map((item) => item.id);
-        if (!all.includes(socket._id)) client.join(socket._id);
+
+        if (!all.includes(socket._id)) {
+            client.join(socket._id);
+        }
 
         const socketUser = {
             _id: socket.id,
-            fullname: socket.fullname
+            fullname: socket.fullname,
         }
 
-        const result = await UsersJSONService.FindDocument({ _id: socketUser._id })
-        if (!result) await UsersJSONService.AddDocument(socketUser as any);
+        const result = await UserModel.FindDocument({
+            _id: socketUser._id
+        })
+        if (!result) await UserModel.AddDocument(socketUser as ParticipantsDataType);
 
         client.on('outgoing', (data, room) => {
-            room.id.forEach((id: string) => client.to(id).emit('incoming', data))
+            room.id.forEach((id: string) => {
+                client.to(id).emit('incoming', data)
+            })
         });
 
         client.on('disconnect', async () => {
-            const result = await UsersJSONService.FindDocument({ _id: socketUser._id })
-            if (result) await UsersJSONService.DeleteDocument(socketUser);
+            const result = await UserModel.FindDocument({
+                _id: socketUser._id
+            })
+            if (result) await UserModel.DeleteDocument(socketUser);
         });
     });
 
@@ -55,5 +65,3 @@ async function SocketConnection(
         throw new Error(error);
     });
 }
-
-export default SocketConnection;

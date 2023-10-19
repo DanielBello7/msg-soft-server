@@ -1,22 +1,26 @@
 [
    {
       "_id": "john@gmail.com",
-      "fullname": "John",
+      "fullname": "John Badmus",
+      "password": "john",
       "createdAt": "Wed Jun 07 2023"
    },
    {
       "_id": "tony@gmail.com",
-      "fullname": "Tony",
+      "fullname": "Tony Criptony",
+      "password": "tony",
       "createdAt": "Wed Jun 07 2023"
    },
    {
-      "_id": "GOKE",
-      "fullname": "GOKE",
+      "_id": "goke@gmail.com",
+      "fullname": "Goke Bello",
+      "password": "goke",
       "createdAt": "Mon Sep 25 2023"
    },
    {
-      "_id": "David",
-      "fullname": "David",
+      "_id": "david@gmail.com",
+      "fullname": "David Balogun",
+      "password": "david",
       "createdAt": "Mon Sep 25 2023"
    }
 ]

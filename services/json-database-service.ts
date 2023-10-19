@@ -1,13 +1,8 @@
-import { ParticipantsDataType } from '../global';
 import { v4 as uuid } from 'uuid';
 import utilities from 'util';
 import fs_module from 'fs';
-import path from 'path';
 
-interface DocumentType {
-    _id: string
-    createdAt: string
-}
+interface DocumentType { _id: string; createdAt: string }
 
 const write_file = utilities.promisify(fs_module.writeFile);
 const read_file = utilities.promisify(fs_module.readFile);
@@ -99,9 +94,4 @@ class JSONFileServiceHandler<T> extends JSONFileServiceAPI<T> {
     }
 }
 
-const folder_path = path.join(__dirname, "../database");
-const UsersJSONService = new JSONFileServiceHandler<ParticipantsDataType>("USERS", folder_path);
-
-UsersJSONService._init_();
-
-export { JSONFileServiceHandler, UsersJSONService };
+export default JSONFileServiceHandler;

@@ -7,7 +7,7 @@ import path from 'path';
 import express from 'express';
 import cors from 'cors';
 
-export default function ServerApplication(whitelist: string[]) {
+export default function app(whitelist: string[]) {
     const app = express();
 
     app.use(cors({

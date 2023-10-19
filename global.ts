@@ -15,4 +15,5 @@ export interface __Response extends Response {
 export interface ParticipantsDataType {
     _id: string
     fullname: string
+    password: string
 }
