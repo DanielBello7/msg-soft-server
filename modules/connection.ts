@@ -1,6 +1,12 @@
 import { UsersJSONService } from '../services/JSONDatabase.service';
-import { Server } from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { Server, Socket } from 'socket.io';
 import http from 'http';
+
+interface ExtendedSocket extends Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> {
+    _id?: string
+    fullname?: string
+}
 
 async function SocketConnection(
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
@@ -12,16 +18,17 @@ async function SocketConnection(
         }
     });
 
-    io.use((socket: any, next) => {
+    io.use((socket: ExtendedSocket, next) => {
         const id = socket.handshake.auth._id
         const fullname = socket.handshake.auth.fullname
-        socket.id = id;
+        socket._id = id;
         socket.fullname = fullname;
         next();
     })
 
     io.on('connection', async (client) => {
-        const socket: any = client
+        const socket: ExtendedSocket = client
+        if (!socket._id) return
         const roomSockets = await io.in(socket._id).fetchSockets();
         const all = roomSockets.map((item) => item.id);
         if (!all.includes(socket._id)) client.join(socket._id);
@@ -32,7 +39,7 @@ async function SocketConnection(
         }
 
         const result = await UsersJSONService.FindDocument({ _id: socketUser._id })
-        if (!result) await UsersJSONService.AddDocument(socketUser);
+        if (!result) await UsersJSONService.AddDocument(socketUser as any);
 
         client.on('outgoing', (data, room) => {
             room.id.forEach((id: string) => client.to(id).emit('incoming', data))

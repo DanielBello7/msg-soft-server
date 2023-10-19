@@ -9,6 +9,7 @@ import variables from '../constants/variables';
 const whitelist = [
     "http://192.168.200.34:5173",
     "http://192.168.200.32:5173",
+    "http://192.168.200.112:5173",
     "http://localhost:5173",
 ]
 
