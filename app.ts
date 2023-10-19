@@ -1,5 +1,5 @@
-import Handle404Error from './middlewares/404-error';
-import HandleIconError from './middlewares/icon-error';
+import handleNotFoundError from './middlewares/handle-not-found-error';
+import handleIconError from './middlewares/handle-icon-error';
 import SecretConfig from './config/secret.config';
 import routes from './routes/index.routes';
 import variables from './constants/variables';
@@ -18,11 +18,11 @@ export default function ServerApplication(whitelist: string[]) {
     app.use('/static', express.static(path.join(__dirname, "/static")));
     app.use(express.urlencoded({ extended: true }));
     app.use(SecretConfig);
-    app.use(HandleIconError);
+    app.use(handleIconError);
 
     app.use('/', routes());
 
-    app.use(Handle404Error);
+    app.use(handleNotFoundError);
 
     return app;
 }

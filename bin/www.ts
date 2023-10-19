@@ -1,11 +1,11 @@
 import "module-alias";
-import environment_configurations from "../config/environments.config";
-import SocketConnection from "../modules/connection";
+import { variables } from '@/constants'
+import environment_configurations from "@/config/environments.config";
+import SocketConnection from "@/modules/socket-connection";
 import ip from 'ip';
-import ServerApplication from "../app";
+import ServerApplication from "@/app";
 import http from 'http';
-import log from "../config/logger.config";
-import variables from '../constants/variables';
+import log from "@/config/logger.config";
 
 environment_configurations();
 
